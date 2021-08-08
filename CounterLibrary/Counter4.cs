@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Counter
 {
 	sealed class Counter4 : Counter
 	{
-		private uint _v;
+		private int _v;
 
 		public override int Size
 		{
@@ -18,21 +14,30 @@ namespace Counter
 
 		unsafe public override bool GetNextNumbers(byte[] output, int count, int offset)
 		{
-			//Interlocked.Increment(ref)
+			int v0, v1;
+			uint max = uint.MaxValue - (uint)count;
 
-			fixed (uint* pi = &_v)
+			do
 			{
-				var pb = (byte*)pi;
-				output[offset] = *pb;
-				output[offset + 1] = *(pb + 1);
-				output[offset + 2] = *(pb + 2);
-				output[offset + 3] = *(pb + 3);
+				v0 = _v;
+				if (unchecked((uint)v0 > max))
+					return false;
+
+				v1 = v0 + count;
 			}
+			while (v0 != Interlocked.CompareExchange(ref _v, v1, v0));
+
+			var pb = (byte*)&v0;
+			output[offset] = *pb;
+			output[offset + 1] = *(pb + 1);
+			output[offset + 2] = *(pb + 2);
+			output[offset + 3] = *(pb + 3);
+			return true;
 		}
 
 		unsafe public override void PeekNextNumber(byte[] output, int offset)
 		{
-			fixed(uint* pi = &_v)
+			fixed(int* pi = &_v)
 			{
 				var pb = (byte*)pi;
 				output[offset] = *pb;
@@ -42,9 +47,9 @@ namespace Counter
 			}
 		}
 
-		unsafe public override void SetNextNumber(byte[] input, int offset)
+		public override void SetNextNumber(byte[] input, int offset)
 		{
-			throw new NotImplementedException();
+			_v = unchecked((int)BitConverter.ToUInt32(input, offset));
 		}
 	}
 }

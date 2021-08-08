@@ -138,10 +138,10 @@ TODO
 
 Error Code |  L  |  Q  |  A  | Comment
 ---        | --- | --- | --- | ---
-0          |  √  |  √  |  √  | Success
-1          |     |  √  |  √  | Wrong counter ID
-2          |     |  √  |     | Reach the largest counter number
-3          |  √  |  √  |  √  | Authentication failed
-4          |     |     |  √  | Exist counter ID
-5          |     |     |  √  | Wrong counter size
-6          |     |     |  √  | Permission denied
+0          |  +  |  +  |  +  | Success
+1          |     |  +  |  +  | Wrong counter ID
+2          |     |  +  |     | Reach the largest counter number
+3          |  +  |  +  |  +  | Authentication failed
+4          |     |     |  +  | Exist counter ID
+5          |     |     |  +  | Wrong counter size
+6          |     |     |  +  | Permission denied
