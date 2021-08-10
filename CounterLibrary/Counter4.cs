@@ -5,7 +5,7 @@ namespace Counter
 {
 	sealed class Counter4 : Counter
 	{
-		private int _v;
+		private volatile int _v;
 
 		public override int Size
 		{
