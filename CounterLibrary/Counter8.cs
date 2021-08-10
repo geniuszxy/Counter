@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Counter
@@ -19,7 +20,7 @@ namespace Counter
 
 			do
 			{
-				v0 = _v;
+				v0 = Volatile.Read(ref _v);
 				if (unchecked((ulong)v0 > max))
 					return false;
 
@@ -27,31 +28,15 @@ namespace Counter
 			}
 			while (v0 != Interlocked.CompareExchange(ref _v, v1, v0));
 
-			var pb = (byte*)&v0;
-			output[offset] = *pb;
-			output[offset + 1] = *(pb + 1);
-			output[offset + 2] = *(pb + 2);
-			output[offset + 3] = *(pb + 3);
-			output[offset + 4] = *(pb + 4);
-			output[offset + 5] = *(pb + 5);
-			output[offset + 6] = *(pb + 6);
-			output[offset + 7] = *(pb + 7);
+			Marshal.Copy(new IntPtr(&v0), output, offset, 8);
 			return true;
 		}
 
 		unsafe public override void PeekNextNumber(byte[] output, int offset)
 		{
-			fixed (long* pi = &_v)
+			fixed (long* p = &_v)
 			{
-				var pb = (byte*)pi;
-				output[offset] = *pb;
-				output[offset + 1] = *(pb + 1);
-				output[offset + 2] = *(pb + 2);
-				output[offset + 3] = *(pb + 3);
-				output[offset + 4] = *(pb + 4);
-				output[offset + 5] = *(pb + 5);
-				output[offset + 6] = *(pb + 6);
-				output[offset + 7] = *(pb + 7);
+				Marshal.Copy(new IntPtr(p), output, offset, 8);
 			}
 		}
 
