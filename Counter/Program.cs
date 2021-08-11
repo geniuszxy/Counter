@@ -14,12 +14,7 @@ namespace Counter
 		/// </summary>
 		static void Main()
 		{
-			ServiceBase[] ServicesToRun;
-			ServicesToRun = new ServiceBase[]
-			{
-				new CounterService()
-			};
-			ServiceBase.Run(ServicesToRun);
+			ServiceBase.Run(new CounterService());
 		}
 	}
 }

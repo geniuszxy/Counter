@@ -14,9 +14,11 @@ namespace Counter
 {
 	public partial class CounterService : ServiceBase
 	{
+		static CounterService _inst;
 		TcpListener _tcpListener;
 		AsyncCallback _onConnect;
 		List<Peer> _peers;
+		Manager _manager;
 
 		public CounterService()
 		{
@@ -25,8 +27,12 @@ namespace Counter
 
 		protected override void OnStart(string[] args)
 		{
+			_inst = this;
 			_onConnect = OnConnect;
 			_peers = new List<Peer>();
+			_manager = new Manager();
+
+			Peer.InitCommandDelegates();
 
 			_tcpListener = new TcpListener(IPAddress.Any, 0);
 			_tcpListener.Start();
@@ -35,7 +41,14 @@ namespace Counter
 
 		protected override void OnStop()
 		{
+			lock(_peers)
+			{
+				foreach (var peer in _peers)
+					peer.Stop();
+				_peers.Clear();
+			}
 			_tcpListener.Stop();
+			_inst = null;
 		}
 
 		private void OnConnect(IAsyncResult asyncResult)
@@ -47,6 +60,11 @@ namespace Counter
 			lock(_peers)
 				_peers.Add(peer);
 			peer.Start();
+		}
+
+		internal static Manager Manager
+		{
+			get { return _inst._manager; }
 		}
 	}
 }
