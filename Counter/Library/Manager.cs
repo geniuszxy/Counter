@@ -45,5 +45,10 @@ namespace Counter
 			foreach (var entry in counters)
 				_counters[entry.Key] = entry.Value;
 		}
+
+		public Counter GetCounter(int counterId)
+		{
+			return _counters[counterId];
+		}
 	}
 }

@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Counter
 {
@@ -17,19 +11,17 @@ namespace Counter
 		static CounterService _inst;
 		TcpListener _tcpListener;
 		AsyncCallback _onConnect;
-		List<Peer> _peers;
 		Manager _manager;
 
 		public CounterService()
 		{
-			InitializeComponent();
+			ServiceName = "Counter";
 		}
 
 		protected override void OnStart(string[] args)
 		{
 			_inst = this;
 			_onConnect = OnConnect;
-			_peers = new List<Peer>();
 			_manager = new Manager();
 
 			Peer.InitCommandDelegates();
@@ -41,12 +33,6 @@ namespace Counter
 
 		protected override void OnStop()
 		{
-			lock(_peers)
-			{
-				foreach (var peer in _peers)
-					peer.Stop();
-				_peers.Clear();
-			}
 			_tcpListener.Stop();
 			_inst = null;
 		}
@@ -56,10 +42,13 @@ namespace Counter
 			var tcpClient = _tcpListener.EndAcceptTcpClient(asyncResult);
 			_tcpListener.BeginAcceptTcpClient(_onConnect, null);
 
-			var peer = new Peer(tcpClient);
-			lock(_peers)
-				_peers.Add(peer);
-			peer.Start();
+			//Create a peer to handle client's commands
+			Peer.Create(tcpClient);
+		}
+
+		internal static CounterService Instance
+		{
+			get { return _inst; }
 		}
 
 		internal static Manager Manager

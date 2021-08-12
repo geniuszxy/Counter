@@ -136,6 +136,8 @@ TODO
 
 # Error
 
+Return data only contains an error code if not success.
+
 Error Code |  L  |  Q  |  A  | Comment
 ---        | --- | --- | --- | ---
 0          |  +  |  +  |  +  | Success
@@ -145,3 +147,4 @@ Error Code |  L  |  Q  |  A  | Comment
 4          |     |     |  +  | Exist counter ID
 5          |     |     |  +  | Wrong counter size
 6          |     |     |  +  | Permission denied
+7          |  +  |  +  |  +  | Wrong input
