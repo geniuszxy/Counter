@@ -24,7 +24,7 @@ namespace Counter
 			_onConnect = OnConnect;
 			_manager = new Manager();
 
-			Peer.InitCommandDelegates();
+			Peer.InitCommands();
 
 			_tcpListener = new TcpListener(IPAddress.Any, 0);
 			_tcpListener.Start();
@@ -43,7 +43,7 @@ namespace Counter
 			_tcpListener.BeginAcceptTcpClient(_onConnect, null);
 
 			//Create a peer to handle client's commands
-			Peer.Create(tcpClient);
+			Peer.Create(tcpClient, Peer.Permission.Query);
 		}
 
 		internal static CounterService Instance
